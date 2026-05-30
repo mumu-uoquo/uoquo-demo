@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uoquo.user.mapper.UserInfoMapper">
+
+  <resultMap id="BaseResultMap" type="com.uoquo.user.model.pojo.UserInfo">
+    <id     column="id"          jdbcType="VARCHAR"   property="id" />
+    <result column="user_name"   jdbcType="VARCHAR"   property="userName" />
+    <result column="real_name"   jdbcType="VARCHAR"   property="realName" />
+    <result column="phone"       jdbcType="VARCHAR"   property="phone" />
+    <result column="password"    jdbcType="VARCHAR"   property="password" />
+    <result column="email"       jdbcType="VARCHAR"   property="email" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_name, real_name, phone, `password`, email, create_time
+  </sql>
+
+  <select id="selectBySearch" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM bko_user
+    WHERE delete_state = 0
+    <if test="userName != null and userName != ''">
+      AND user_name LIKE CONCAT('%',#{userName},'%')
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM bko_user
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateByPrimaryKey" parameterType="com.uoquo.user.model.pojo.UserInfo">
+    UPDATE bko_user
+    <set>
+      <if test="userName != null and userName != ''">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null and realName != ''">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone != ''">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null and password != ''">
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,199 @@
+
+# ============= 自定义配置 =============
+app:
+  name : ${SERVICE_NAME:demo-app}
+  port : ${SERVICE_PORT:7001}
+  code : ${SERVICE_CODE:01}  # 应用编码（16进制，最大0xFF）
+  node : ${SERVICE_NODE:1}   # 节点编码（16进制，最大0xF）
+  type : ${spring.profiles.active:prod} # 环境类型（dev、test、demo、prod）
+  base-path: ${SERVICE_PATH:/api/app}
+  temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
+  data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
+  preferred:
+    networks : ${IP_PREFERRED:192.168} # 网络IP前缀
+  # ============= DB配置 =============
+  db:
+    url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
+    user : ${DB_USER:admin}
+    pswd : ${DB_PSWD:Admin@l23}
+    slow : 100 # 慢SQL（单位ms）
+  # ============= REDIS配置 =============
+  # 哨兵 > 集群 > 单点
+  redis:
+    enabled  : ${REDIS_ENABLED:true}
+    password : ${REDIS_PASSWORD:xuziu}
+    # 哨兵（优先级：高）
+    sentinel-nodes : ${REDIS_SENTINEL:dev.xuziu.com:26379}
+    # 集群（优先级：中）
+    cluster-nodes : ${REDIS_CLUSTER:}
+    # 单点（优先级：低）
+    host : ${REDIS_HOST:dev.xuziu.com}
+    port : 6379
+  # ============= 自定义线程池 =============
+  task:
+    pool:
+      core-size  : 10  # 核心线程数（预估任务量 * 单任务时间秒），最好根据8020原则预估，默认10
+      max-size   : 50  # 最大线程数，默认50
+      queue-size : 100 # 任务队列（核心线程数 / 单任务时间秒 * 任务最大时间秒）
+  # ============= 自定义连接池 =============
+  http:
+    pool:
+      max-idle   : 10 # 最大空闲连接数（多余的会销毁），默认5个
+      keep-alive : 5  # 连接存活时间（分钟），默认5分钟
+      timeout:
+        connect : 30  # 建立连接超时时间（秒），默认3秒
+        read    : 20  # 数据传输超时时间（秒），默认4秒
+        write   : 10  # 请求响应超时时间（秒），默认5秒
+  # ============= 日志配置 =============
+  log:
+    name : ${app.name}
+    home : ./logs
+  # ============= SWAGGER =============
+  swagger:
+    enabled: false
+
+
+# ================== 以下参数基本不用改动 ====================
+# ======================= web容器配置 =======================
+server:
+  port: ${app.port}
+  use-forward-headers: true
+  servlet:
+    context-path: ${app.base-path:/}
+    # spring boot 2.x
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force:   true
+      force-request:  true
+      force-response: true
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types:
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - application/json
+      - application/xml
+      - application/javascript
+  tomcat:
+    uri-encoding: UTF-8
+    accept-count: 15000 # 等待连接队列
+    max-threads: 15000  # 最大线程数默认是200
+    max-connections: 15000
+    min-spare-threads: 20
+    connection-timeout: 5000
+    # 代理转发https请求（https://docs.spring.io/spring-boot/docs/2.1.x/reference/htmlsingle/#howto-enable-https）
+    protocol-header: X-Forwarded-Proto
+# ======================= spring配置 =======================
+spring:
+  application:
+    name: ${app.name} # 应用名称
+    index: ${spring.application.name}-${app.port}-${app.code:00}${app.node:0}
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER # spring2.6.0之后默认为 PathPatternParser，要集成swagger3，则需要改回 AntPathMatcher
+    favicon:
+      enabled: false
+  http:
+    # spring boot 1.x
+    encoding:
+      enabled: true
+      force:   true
+      charset: UTF-8
+  servlet:
+    multipart:
+      enabled: true
+      location: ${app.temp-dir}
+      max-file-size:    30MB # 单文件大小
+      max-request-size: 50MB # 总请求大小
+  # ======================= redis配置 =======================
+  redis:
+    default:
+      database: 0  # Redis数据库索引（默认为0）
+      password: ${app.redis.password}
+      timeout: 2000 # 读超时时间（毫秒），适当增加以应对大 key 或慢查询
+      connect-timeout: 1000 # 连接超时时间（毫秒），适当增加避免网络波动
+      client-name: ${spring.application.name}-redis # 客户端名称标识，便于监控
+      # 单点模式
+      host: ${app.redis.host}
+      port: ${app.redis.port}
+      # 哨兵模式
+      sentinel:
+        nodes: ${app.redis.sentinel-nodes}
+        master: mymaster
+        # sentinel-password: ${app.redis.sentinel-password} # 如果哨兵有密码
+      # 集群模式
+      cluster:
+        nodes: ${app.redis.cluster-nodes} # 以逗号分隔的“主机:端口”对列表进行引导
+        max-redirects: 3     # 在群集中执行命令时要遵循的最大重定向数目
+      lettuce:
+        shutdown-timeout: 100ms # 优雅关闭超时时间
+        pool:
+          max-active: 16 # 连接池最大连接数，建议设置为 CPU 核心数的 2-4 倍
+          max-idle: 8    # 最大空闲连接，适当增加以应对突发流量
+          min-idle: 4    # 最小空闲连接，保持一定的预热连接
+          max-wait: 3000ms # 连接池最大阻塞等待时间，适当延长
+          time-between-eviction-runs: 30s # 空闲连接检测间隔
+          # 关键健康检查配置
+          test-while-idle: true
+          test-on-borrow:  false # 改为 false，提升性能，依赖 test-while-idle
+          num-tests-per-eviction-run: 3
+          # 连接驱逐策略优化
+          min-evictable-idle-time-millis: 1800000 # 连接在池中最小生存时间 (30 分钟)
+          soft-min-evictable-idle-time-millis: 1800000 # 软最小驱逐时间
+
+  # ======================= 数据源配置 =======================
+  datasource:
+    # https://github.com/alibaba/druid/tree/master/druid-spring-boot-starter
+    # Spring Boot 2.X 版本不再支持配置继承，多数据源时所有配置都需要单独配置，否则配置不会生效
+    druid:
+      # 数据源（主）
+      primary:
+        url: ${app.db.url}
+        username: ${app.db.user}
+        password: ${app.db.pswd}
+        initial-size: ${DB_POOL_INIT:2}  # 初始化大小
+        max-active:   ${DB_POOL_SIZE:10} # 最大连接数
+        min-idle:     1 # 最小连接数
+        max-wait:     3000 # 获取连接等待超时的时间(ms)
+        # 打开PSCache，并指定每个连接上PSCache的大小
+        #pool-prepared-statements: true
+        #max-pool-prepared-statement-per-connection-size: 20
+        validation-query: 'SELECT 1 FROM DUAL'
+        #validation-query-timeout:
+        test-on-borrow:  true
+        test-on-return:  false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 60000  # 间隔多久才进行一次检测，检测需要关闭的空闲连接(ms)
+        #min-evictable-idle-time-millis:    # 连接在池中最小生存的时间(ms)
+        #max-evictable-idle-time-millis:    # 连接在池中最大生存的时间(ms)
+      # Filter 配置（可全局生效）
+      filter:
+        # 日志
+        slf4j:
+          enabled: true
+        # SQL统计
+        stat:
+          enabled: true
+          #db-type: mysql
+          merge-sql: true    # SQL合并
+          log-slow-sql: true # 开启慢SQL记录
+          slow-sql-millis: ${app.db.slow:100} # 慢sql
+        # 监控页面
+        stat-view-servlet:
+          enabled: false
+        # 请求统计
+        web-stat-filter:
+          enabled: false
+# ======================= SWAGGER =======================
+springdoc:
+  api-docs:
+    enabled: ${app.swagger.enabled:false}
+# ======================= 日志配置 =======================
+# spring默认加载logback.xml和logback-spring.xml，此处让其从spring中加载变量，因此手动加载
+# 参考：https://www.jianshu.com/p/3dee6b898eda
+logging:
+  config: classpath:logback-custom.xml

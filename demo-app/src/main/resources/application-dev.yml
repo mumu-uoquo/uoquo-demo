@@ -1,0 +1,53 @@
+
+# ============= 自定义配置 =============
+app:
+  name : ${SERVICE_NAME:demo-app}
+  port : ${SERVICE_PORT:7001}
+  code : ${SERVICE_CODE:01}  # 应用编码（16进制，最大0xFF）
+  node : ${SERVICE_NODE:1}   # 节点编码（16进制，最大0xF）
+  type : ${spring.profiles.active:dev} # 环境类型（dev、test、demo、prod）
+  base-path: /api/app
+  temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
+  data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
+  preferred:
+    networks : ${IP_PREFERRED:192.168} # 网络IP前缀
+  # ============= DB配置 =============
+  db:
+    url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
+    user : ${DB_USER:admin}
+    pswd : ${DB_PSWD:Admin@l23}
+    slow : 100 # 慢SQL（单位ms）
+  # ============= REDIS配置 =============
+  # 哨兵 > 集群 > 单点
+  redis:
+    enabled  : true
+    password : xuziu
+    # 哨兵（优先级：高）
+    sentinel-nodes :
+    # 集群（优先级：中）
+    cluster-nodes :
+    # 单点（优先级：低）
+    host : dev.xuziu.loc
+    port : 6379
+  # ============= 自定义线程池 =============
+  task:
+    pool:
+      core-size  : 10  # 核心线程数（预估任务量 * 单任务时间秒），最好根据8020原则预估，默认10
+      max-size   : 50  # 最大线程数，默认50
+      queue-size : 100 # 任务队列（核心线程数 / 单任务时间秒 * 任务最大时间秒）
+  # ============= 自定义连接池 =============
+  http:
+    pool:
+      max-idle   : 10 # 最大空闲连接数（多余的会销毁），默认5个
+      keep-alive : 5  # 连接存活时间（分钟），默认5分钟
+      timeout:
+        connect : 30  # 建立连接超时时间（秒），默认3秒
+        read    : 20  # 数据传输超时时间（秒），默认4秒
+        write   : 10  # 请求响应超时时间（秒），默认5秒
+  # ============= 日志配置 =============
+  log:
+    name : ${app.name}
+    home : ./logs
+  # ============= SWAGGER =============
+  swagger:
+    enabled: true
