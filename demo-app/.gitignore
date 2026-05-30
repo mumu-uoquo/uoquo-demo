@@ -33,3 +33,6 @@ build/
 ### customer ###
 /logs/
 /temp/
+
+### jqwik (属性测试失败用例缓存) ###
+.jqwik-database

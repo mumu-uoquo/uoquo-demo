@@ -148,7 +148,7 @@
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="ASYNC_ROOT_LOG_FILE" />
   </root>
-  <logger name="com.uoquo" level="${LOG_LEVEL_APP:-DEBUG}" additivity="false">
+  <logger name="com.uoquo" level="${LOG_LEVEL_APP:-INFO}" additivity="false">
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="ASYNC_APP_LOG_FILE" />
   </logger>
@@ -156,11 +156,11 @@
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="ASYNC_ACCESS_LOG_FILE" />
   </logger>
-  <logger name="ACCESS_REQUEST_ALL" level="${LOG_REQUEST_ALL:-DEBUG}" additivity="false">
+  <logger name="ACCESS_REQUEST_ALL" level="${LOG_REQUEST_ALL:-INFO}" additivity="false">
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="ASYNC_ACCESS_ALL_FILE" />
   </logger>
-  <logger name="ACCESS_RESPONSE_ALL" level="${LOG_RESPONSE_ALL:-DEBUG}" additivity="false">
+  <logger name="ACCESS_RESPONSE_ALL" level="${LOG_RESPONSE_ALL:-INFO}" additivity="false">
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="ASYNC_ACCESS_ALL_FILE" />
   </logger>
