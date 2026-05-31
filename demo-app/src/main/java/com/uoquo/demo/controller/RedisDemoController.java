@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uoquo.annotation.web.IgnoreAuth;
@@ -33,88 +32,91 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "redis-demo")
 @RestController
 @RequestMapping("/demo/redis")
+@IgnoreAuth(all = true)
 public class RedisDemoController {
 
     private static final Logger log = LoggerFactory.getLogger(RedisDemoController.class);
+
+    /** 演示用 Redis key。 */
+    private static final String DEMO_KEY = "demo-key";
+
+    /** 演示用 Redis value。 */
+    private static final String DEMO_VALUE = "demo-value";
 
     /** 演示用默认过期时间（秒）。 */
     private static final int DEFAULT_TTL_SECONDS = 300;
 
     /**
-     * 将 value 存储到 key 下，返回布尔结果（需求 6.1）。
+     * 将演示值存储到 Redis，返回布尔结果。
      */
-    @RequestMapping("/set")
-    @IgnoreAuth(all = true)
-    @Operation(description = "Redis set", operationId = "redisSet")
-    public ReturnData<Boolean> set(@RequestParam String key, @RequestParam String value) {
+    @GetMapping("/set")
+    @Operation(operationId = "userRedisSet", description = "Redis set 演示")
+    public ReturnData<Boolean> set() {
         try {
-            RedisUtil.put(key, value, DEFAULT_TTL_SECONDS);
+            RedisUtil.put(DEMO_KEY, DEMO_VALUE, DEFAULT_TTL_SECONDS);
             return new ReturnData<>(true);
         } catch (Exception e) {
             try {
-                log.error("Redis set 失败, key={}", key, e);   // 需求 6.5：记录异常
+                log.error("Redis set 失败, key={}", DEMO_KEY, e);
             } catch (Exception ignore) {
-                // 需求 6.6：记录日志本身失败也吞掉，仍返回 false
+                // 日志记录失败也吞掉
             }
             return new ReturnData<>(false);
         }
     }
 
     /**
-     * 读取 key 对应的 value，返回该 value（需求 6.2）；异常时返回包装 null 的 ReturnData。
+     * 读取演示 key 对应的 value，返回该 value。
      */
     @GetMapping("/get")
-    @IgnoreAuth(all = true)
-    @Operation(description = "Redis get", operationId = "redisGet")
-    public ReturnData<String> get(@RequestParam String key) {
+    @Operation(operationId = "userRedisGet", description = "Redis get 演示")
+    public ReturnData<String> get() {
         try {
-            String value = RedisUtil.get(key, String.class);
+            String value = RedisUtil.get(DEMO_KEY, String.class);
             return new ReturnData<>(value);
         } catch (Exception e) {
             try {
-                log.error("Redis get 失败, key={}", key, e);   // 需求 6.5：记录异常
+                log.error("Redis get 失败, key={}", DEMO_KEY, e);
             } catch (Exception ignore) {
-                // 需求 6.6：记录日志本身失败也吞掉，仍返回 null 值
+                // 日志记录失败也吞掉
             }
             return new ReturnData<>((String) null);
         }
     }
 
     /**
-     * 删除 key，返回布尔结果（需求 6.3）。
+     * 删除演示 key，返回布尔结果。
      */
     @DeleteMapping("/delete")
-    @IgnoreAuth(all = true)
-    @Operation(description = "Redis delete", operationId = "redisDelete")
-    public ReturnData<Boolean> delete(@RequestParam String key) {
+    @Operation(operationId = "userRedisDelete", description = "Redis delete 演示")
+    public ReturnData<Boolean> delete() {
         try {
-            RedisUtil.remove(key);
+            RedisUtil.remove(DEMO_KEY);
             return new ReturnData<>(true);
         } catch (Exception e) {
             try {
-                log.error("Redis delete 失败, key={}", key, e);   // 需求 6.5：记录异常
+                log.error("Redis delete 失败, key={}", DEMO_KEY, e);
             } catch (Exception ignore) {
-                // 需求 6.6：记录日志本身失败也吞掉，仍返回 false
+                // 日志记录失败也吞掉
             }
             return new ReturnData<>(false);
         }
     }
 
     /**
-     * 报告 key 是否存在，返回布尔结果（需求 6.4）。
+     * 检查演示 key 是否存在，返回布尔结果。
      */
     @GetMapping("/exists")
-    @IgnoreAuth(all = true)
-    @Operation(description = "Redis exists", operationId = "redisExists")
-    public ReturnData<Boolean> exists(@RequestParam String key) {
+    @Operation(operationId = "userRedisExists", description = "Redis exists 演示")
+    public ReturnData<Boolean> exists() {
         try {
-            boolean present = RedisUtil.exist(key);
+            boolean present = RedisUtil.exist(DEMO_KEY);
             return new ReturnData<>(present);
         } catch (Exception e) {
             try {
-                log.error("Redis exists 失败, key={}", key, e);   // 需求 6.5：记录异常
+                log.error("Redis exists 失败, key={}", DEMO_KEY, e);
             } catch (Exception ignore) {
-                // 需求 6.6：记录日志本身失败也吞掉，仍返回 false
+                // 日志记录失败也吞掉
             }
             return new ReturnData<>(false);
         }

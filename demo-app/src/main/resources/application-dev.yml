@@ -9,8 +9,6 @@ app:
   base-path: /api/app
   temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
   data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
-  preferred:
-    networks : ${IP_PREFERRED:192.168} # 网络IP前缀
   # ============= DB配置 =============
   db:
     url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}

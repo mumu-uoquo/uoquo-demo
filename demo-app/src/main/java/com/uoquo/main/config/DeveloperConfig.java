@@ -1,15 +1,10 @@
 package com.uoquo.main.config;
 
-import com.uoquo.utils.spring.RedisUtil;
 import com.uoquo.utils.CurrentUser;
-import com.uoquo.web.BaseCacheKey;
+import com.uoquo.utils.StringUtil;
 import com.uoquo.web.interceptor.CheckLoginInterceptor;
 import com.uoquo.web.interceptor.CheckParamInterceptor;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import com.uoquo.web.interceptor.CurrentUserInterceptorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,6 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 /**
@@ -41,20 +40,51 @@ public class DeveloperConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public CurrentUserInterceptorAdapter currentUserInterceptor() {
+        log.warn("开发模式：CurrentUserInterceptorAdapter");
+        return new CurrentUserInterceptorAdapter() {
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+                    throws Exception {
+                // user
+                CurrentUser.UserInfo user = CurrentUser.getInfo();
+                user.setUserId("user-1");
+                user.setUserName("admin");
+                user.setRealName("管理员");
+                user.setInstituteId("institute-1");
+                user.setOfficeId("office-1");
+                user.setCurrentRoleId("role-1");
+                CurrentUser.setInfo(user);
+                // app
+                CurrentUser.setAppkey("dev-appkey");
+                CurrentUser.setAppType("dev-appType");
+                CurrentUser.setAppVersion("1.0.0");
+                // 补全其他信息
+                this.completionCurrentUser(request);
+
+                return true;
+            }
+
+            @Override
+            protected String getAppSecret(String appkey) {
+                return "dev-secret";
+            }
+
+            @Override
+            protected String getGlobalSecret() {
+                return "dev-global-secret";
+            }
+        };
+    }
+
+    @Bean
     public CheckParamInterceptor checkParamInterceptor() {
         log.warn("开发模式：CheckParamInterceptor");
         return new CheckParamInterceptor() {
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                     throws Exception {
-                String appSecret = getAppSecret(CurrentUser.getAppkey());
-                CurrentUser.setAppSecret(appSecret);
                 return true;
-            }
-
-            private String getAppSecret(String appid) {
-                String secret = RedisUtil.getLocalCache(BaseCacheKey.APPKEY_SECRET_PREFIX + appid, String.class);
-                return secret;
             }
         };
     }
@@ -66,8 +96,6 @@ public class DeveloperConfig implements WebMvcConfigurer {
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                     throws Exception {
-                CurrentUser.getInfo().setUserId("34N82P6K7WPRMBRS");
-                CurrentUser.setAppkey("K4X3Z5W9H6Q0J7Q4");
                 return true;
             }
         };

@@ -9,8 +9,6 @@ app:
   base-path: ${SERVICE_PATH:/api/app}
   temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
   data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
-  preferred:
-    networks : ${IP_PREFERRED:192.168} # 网络IP前缀
   # ============= DB配置 =============
   db:
     url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
@@ -27,27 +25,28 @@ app:
     # 集群（优先级：中）
     cluster-nodes : ${REDIS_CLUSTER:}
     # 单点（优先级：低）
-    host : ${REDIS_HOST:dev.xuziu.com}
-    port : 6379
+    host : ${REDIS_HOST:}
+    port : ${REDIS_PORT:6379}
   # ============= 自定义线程池 =============
   task:
     pool:
-      core-size  : 10  # 核心线程数（预估任务量 * 单任务时间秒），最好根据8020原则预估，默认10
-      max-size   : 50  # 最大线程数，默认50
-      queue-size : 100 # 任务队列（核心线程数 / 单任务时间秒 * 任务最大时间秒）
+      core-size : ${THREAD_POOL_CORE:8}   # 核心线程数（预估任务量 * 单任务时间秒），最好根据8020原则预估，默认10
+      max-size  : ${THREAD_POOL_SIZE:16}  # 最大线程数，默认50
+      keep-alive: ${THREAD_KEEP_ALIVE:60} # 线程活跃时间（秒）
+      queue-capacity : ${THREAD_TASK_QUEUE:1024} # 任务队列（核心线程数 / 单任务时间秒 * 任务最大时间秒）
   # ============= 自定义连接池 =============
   http:
     pool:
-      max-idle   : 10 # 最大空闲连接数（多余的会销毁），默认5个
-      keep-alive : 5  # 连接存活时间（分钟），默认5分钟
+      max-idle   : ${HTTP_POOL_IDLE:10}    # 最大空闲连接数（多余的会销毁），默认5个
+      keep-alive : ${HTTP_KEEP_ALIVE:300}  # 连接存活时间（秒），默认5分钟
       timeout:
-        connect : 30  # 建立连接超时时间（秒），默认3秒
-        read    : 20  # 数据传输超时时间（秒），默认4秒
-        write   : 10  # 请求响应超时时间（秒），默认5秒
+        connect : ${HTTP_TIMEOUT_CONN:30}   # 建立连接超时时间（秒），默认3秒
+        read    : ${HTTP_TIMEOUT_READ:20}   # 数据传输超时时间（秒），默认4秒
+        write   : ${HTTP_TIMEOUT_WRITE:10}  # 请求响应超时时间（秒），默认5秒
   # ============= 日志配置 =============
   log:
     name : ${app.name}
-    home : ./logs
+    home : ${DIR_LOGS:./logs}
   # ============= SWAGGER =============
   swagger:
     enabled: false
@@ -188,6 +187,11 @@ spring:
         # 请求统计
         web-stat-filter:
           enabled: false
+
+# ======================= mybatis =======================
+mybatis:
+  type-handlers-package: com.uoquo.web.mybatis.handler  # TypeHandler所在的包路径
+
 # ======================= SWAGGER =======================
 springdoc:
   api-docs:

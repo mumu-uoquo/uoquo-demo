@@ -38,8 +38,8 @@ import net.jqwik.api.lifecycle.BeforeContainer;
  * <p><b>Validates: Requirements 6.7</b>
  *
  * <p>对任意非空 key（加随机前缀避免冲突）与任意 value 字符串，经
- * {@link RedisDemoController#set(String, String)} 将 value 存入 key 后，在过期前通过
- * {@link RedisDemoController#get(String)} 重新读取应返回所存储的 value。
+ * {@link RedisDemoController#set()} 将 value 存入 key 后，在过期前通过
+ * {@link RedisDemoController#get()} 重新读取应返回所存储的 value。
  *
  * <p>系统中的 {@link RedisUtil} 通过私有静态 {@code redisTemplate} 字段委托
  * {@code opsForValue().set/get} 等操作。真实 Redis 在测试环境通常不可用，因此本测试
@@ -108,11 +108,11 @@ class RedisDemoControllerRoundTripPropertyTest {
         String key = "pbt:" + UUID.randomUUID() + ":" + keySuffix;
 
         // 存入
-        ReturnData<Boolean> setResult = controller.set(key, value);
+        ReturnData<Boolean> setResult = controller.set();
         assertThat(setResult.getData()).isTrue();
 
         // 过期前读取应返回所存储的 value（往返属性）
-        ReturnData<String> getResult = controller.get(key);
+        ReturnData<String> getResult = controller.get();
         assertThat(getResult.getData()).isEqualTo(value);
     }
 }
