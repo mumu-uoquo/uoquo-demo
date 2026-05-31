@@ -1,0 +1,69 @@
+# ============================= 自定义配置. =============================
+# 该文件为每个微服务个性化配置，其中redis、db等可以提取到配置中心里
+# 该文件将优先于application.yml加载
+# https://cloud.spring.io/spring-cloud-static/Hoxton.SR3/reference/htmlsingle/#the-bootstrap-application-context
+# ======================================================================
+
+# ============= 自定义配置 =============
+app:
+  name : ${SERVICE_NAME:demo-service-user}
+  port : ${SERVICE_PORT:7005}
+  code : ${SERVICE_CODE:01}  # 应用编码（16进制，最大0xFF）
+  node : ${SERVICE_NODE:1}   # 节点编码（16进制，最大0xF）
+  type : ${spring.profiles.active:dev} # 环境类型（dev、test、demo、prod）
+  base-path: /api/user
+  temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
+  data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
+  preferred:
+    networks : ${IP_PREFERRED:192.168.50} # 网络IP前缀（多网卡注册时使用）
+  # ============= sentinel配置 =============
+  sentinel:
+    enabled:   ${SENTINEL_ENABLED:false}
+    dashboard: ${SENTINEL_HOST:dev.xuziu.loc:8088}
+    port:      ${SENTINEL_PORT:7320} # 供sentinel服务端访问
+  # ============= nacos配置 =============
+  nacos:
+    enabled:   ${NACOS_ENABLED:true}
+    server:    ${NACOS_HOST:dev.xuziu.loc:8848}
+    namespace: ${NACOS_NAMESPACE:47d74d2f-aeb9-4f47-953c-8f3af58ebd79}
+    username:  ${NACOS_USER:nacos}
+    password:  ${NACOS_PSWD:nacos@123}
+  # ============= DB配置 =============
+  db:
+    url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
+    user : ${DB_USER:admin}
+    pswd : ${DB_PSWD:Admin@l23}
+    slow : 100 # 慢SQL（单位ms）
+  # ============= REDIS配置 =============
+  # 哨兵 > 集群 > 单点
+  redis:
+    enabled  : ${REDIS_ENABLED:true}
+    password : ${REDIS_PASSWORD:xuziu}
+    # 哨兵（优先级：高）
+    sentinel-nodes : ${REDIS_SENTINEL:dev.xuziu.loc:26379}
+    # 集群（优先级：中）
+    cluster-nodes : ''
+    # 单点（优先级：低）
+    host : ${REDIS_HOST:dev.xuziu.loc}
+    port : 6379
+  # ============= KAFKA配置 ==============
+  kafka:
+    default:
+      enabled: ${KAFKA_ENABLED:false}
+      host:    ${KAFKA_HOST:dev.xuziu.loc:9192}
+      group:   ${KAFKA_GROUP:${app.name}}
+      bus-topic: ${KAFKA_BUS_TOPIC:SpringCloudBusTopic}
+      bus-group: ${KAFKA_BUS_GROUP:${app.name}-bus}  # 默认用服务名，防止多节点时重复消费
+  # ============= 日志配置 =============
+  log:
+    name : ${app.name}
+    home : ${DIR_LOGS:./logs}
+  # ============= SWAGGER =============
+  swagger:
+    enabled: true
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.uoquo: ${LOG_LEVEL_APP:DEBUG}
+    com.uoquo.web.interceptor.GlobalInterceptor: ${LOG_LEVEL_ROOT:INFO}
