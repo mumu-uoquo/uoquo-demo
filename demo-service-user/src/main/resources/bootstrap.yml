@@ -30,9 +30,9 @@ app:
     password:  ${NACOS_PSWD:nacos@123}
   # ============= DB配置 =============
   db:
-    url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
+    url  : jdbc:mysql://${DB_HOST:dev.xuziu.com}:${DB_PORT:3306}/${DB_NAME:uoquo_health}?serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}&allowMultiQueries=true${DB_EXTENSION:&characterEncoding=utf8&useSSL=true}
     user : ${DB_USER:admin}
-    pswd : ${DB_PSWD:Admin@l23}
+    pswd : ${DB_PSWD:Admin@123}
     slow : 100 # 慢SQL（单位ms）
   # ============= REDIS配置 =============
   # 哨兵 > 集群 > 单点
@@ -50,7 +50,7 @@ app:
   kafka:
     default:
       enabled: ${KAFKA_ENABLED:true}
-      host:    ${KAFKA_HOST:dev.xuziu.com:9192}
+      host:    ${KAFKA_HOST:dev.xuziu.com:9092}
       group:   ${KAFKA_GROUP:${app.name}}
       bus-topic: ${KAFKA_BUS_TOPIC:SpringCloudBusTopic}
       bus-group: ${KAFKA_BUS_GROUP:${app.name}-bus}  # 默认用服务名，防止多节点时重复消费

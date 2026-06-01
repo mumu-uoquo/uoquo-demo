@@ -196,6 +196,7 @@ mybatis:
 springdoc:
   api-docs:
     enabled: ${app.swagger.enabled:false}
+
 # ======================= 日志配置 =======================
 # spring默认加载logback.xml和logback-spring.xml，此处让其从spring中加载变量，因此手动加载
 # 参考：https://www.jianshu.com/p/3dee6b898eda

@@ -4,6 +4,7 @@
  */
 package com.uoquo.main;
 
+import com.uoquo.main.config.DeveloperConfig;
 import com.uoquo.utils.StringUtil;
 import com.uoquo.utils.ThreadPoolUtil;
 import com.uoquo.web.ServiceApplication;
@@ -16,11 +17,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.*;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 import java.util.Optional;
 
 @EnableDiscoveryClient
 @SpringBootApplication
+// 排除 DeveloperConfig 的自动扫描，采用 ApplicationConfig 的 @Import 导入
+@ComponentScan(excludeFilters = @ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE,
+        classes = DeveloperConfig.class
+))
 public class DemoCloudUserApplication extends ServiceApplication {
 
     /**
