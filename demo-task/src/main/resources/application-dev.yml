@@ -1,0 +1,31 @@
+
+# ============= 自定义配置 =============
+app:
+  name : ${SERVICE_NAME:scheduler-center}
+  code : ${SERVICE_CODE:01}  # 应用编码（16进制，最大0xFF）
+  node : ${SERVICE_NODE:1}   # 节点编码（16进制，最大0xF）
+  type : ${spring.profiles.active:dev} # 环境类型（dev、test、demo、prod）
+  temp-dir: ${DIR_TEMP:./temp} # 临时目录（上传、下载等）
+  data-dir: ${DIR_DATA:./data} # 数据目录（永久存储）
+  # ============= DB配置 =============
+  db:
+    url  : jdbc:mysql://${DB_HOST:localhost}:3306/uoquo_health?characterEncoding=utf8&useSSL=false&serverTimezone=${DB_TZ:${TZ:Asia/Shanghai}}
+    user : ${DB_USER:admin}
+    pswd : ${DB_PSWD:Admin@l23}
+    slow : 100 # 慢SQL（单位ms）
+  # ============= REDIS配置 =============
+  # 哨兵 > 集群 > 单点
+  redis:
+    enabled  : true
+    password : xuziu
+    # 哨兵（优先级：高）
+    sentinel-nodes :
+    # 集群（优先级：中）
+    cluster-nodes :
+    # 单点（优先级：低）
+    host : dev.xuziu.loc
+    port : 6379
+  # ============= 日志配置 =============
+  log:
+    name : ${app.name}
+    home : ./logs
