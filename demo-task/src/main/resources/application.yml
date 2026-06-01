@@ -23,7 +23,7 @@ app:
     # 集群（优先级：中）
     cluster-nodes : ${REDIS_CLUSTER:}
     # 单点（优先级：低）
-    host : ${REDIS_HOST:}
+    host : ${REDIS_HOST:dev.xuziu.com}
     port : ${REDIS_PORT:6379}
   # ============= 自定义线程池 =============
   task:
