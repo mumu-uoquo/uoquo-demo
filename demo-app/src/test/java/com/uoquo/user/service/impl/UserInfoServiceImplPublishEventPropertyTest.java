@@ -12,10 +12,10 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import com.uoquo.web.events.AppEvent;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEvent;
 
-import com.uoquo.user.event.UserEvent;
 import com.uoquo.user.mapper.UserInfoMapper;
 import com.uoquo.user.model.pojo.UserInfo;
 import com.uoquo.web.events.UoquoEventPublisher;
@@ -31,7 +31,7 @@ import net.jqwik.api.Provide;
  * Property 2: 修改密码成功才发布携带更新数据的 User_Event。
  *
  * <p>For any UserInfo 记录与任意 oldPassword 字符串，当 {@code changePassword} 成功（返回 true）时，
- * 恰好通过 {@link UoquoEventPublisher} 发布一个 {@link UserEvent}，且该事件的 newData 等于更新后的
+ * 恰好通过 {@link UoquoEventPublisher} 发布一个 {@link AppEvent}，且该事件的 newData 等于更新后的
  * UserInfo 记录；当 {@code changePassword} 失败（返回 false）时，不发布任何事件。</p>
  *
  * <p>Validates: Requirements 4.1, 4.3, 4.5</p>
@@ -92,9 +92,9 @@ class UserInfoServiceImplPublishEventPropertyTest {
 
             ApplicationEvent published = captor.getValue();
             // 需求 4.2（间接）：发布的是 UserEvent（AppEvent<UserInfo> 的具体子类）
-            assertThat(published).isInstanceOf(UserEvent.class);
+            assertThat(published).isInstanceOf(AppEvent.class);
 
-            UserEvent event = (UserEvent) published;
+            AppEvent<UserInfo> event = (AppEvent<UserInfo>) published;
             // 需求 4.3：newData 等于更新后的 UserInfo（同一被更新对象，且密码为新密码）
             assertThat(event.getNewData()).isSameAs(stored);
             String expectedNewPassword = newPassword == null ? null : newPassword.trim();

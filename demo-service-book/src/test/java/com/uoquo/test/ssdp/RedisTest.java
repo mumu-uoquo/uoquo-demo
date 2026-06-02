@@ -17,7 +17,7 @@ import com.uoquo.test.ssdp.pojo.User3;
 import com.uoquo.utils.json.JsonUtil;
 import com.uoquo.utils.json.jackson.DateContextualDeserializer;
 import com.uoquo.utils.json.jackson.DateContextualSerializer;
-import com.uoquo.web.handler.RedisUtil;
+import com.uoquo.utils.spring.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;

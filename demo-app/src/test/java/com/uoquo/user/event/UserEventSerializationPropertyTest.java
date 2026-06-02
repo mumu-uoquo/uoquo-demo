@@ -12,6 +12,7 @@ import java.util.Date;
 import com.uoquo.user.model.pojo.UserInfo;
 import com.uoquo.utils.json.JsonUtil;
 
+import com.uoquo.web.events.AppEvent;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -22,9 +23,9 @@ import net.jqwik.api.Provide;
 /**
  * Property 4：User_Event 序列化往返。
  *
- * <p>For any {@link UserEvent}（携带任意 businessType、operationType、operationStatus 与任意
+ * <p>For any {@link AppEvent}（携带任意 businessType、operationType、operationStatus 与任意
  * {@link UserInfo} newData），通过 {@link JsonUtil} 序列化为 String 再反序列化回
- * {@link UserEvent} 后，所得事件的 businessType、operationType、operationStatus 与 newData
+ * {@link AppEvent} 后，所得事件的 businessType、operationType、operationStatus 与 newData
  * 都与原始事件相等。</p>
  *
  * <p><b>Validates: Requirements 9.1, 9.2, 9.5</b></p>
@@ -32,7 +33,7 @@ import net.jqwik.api.Provide;
  * <p>说明：</p>
  * <ul>
  *   <li>系统被测对象是 {@link JsonUtil#serialize(Object)} 后再 {@link JsonUtil#deserialize(String, Class)}
- *       回 {@link UserEvent} 的往返（与 {@code EventDemoController.resend} 一致）。
+ *       回 {@link AppEvent} 的往返（与 {@code EventDemoController.resend} 一致）。
  *       {@code UserEvent} 具体绑定 {@code AppEvent<UserInfo>}，故 Jackson 可将泛型 newData 重建为
  *       {@link UserInfo}，无需三参重载。</li>
  *   <li>{@code JsonUtil} 将 {@link Date} 序列化为 epoch 毫秒字符串；仅 13 位正毫秒值可无损往返，
@@ -124,13 +125,13 @@ class UserEventSerializationPropertyTest {
             @ForAll("eventTexts") String operationStatus,
             @ForAll("userInfos") UserInfo newData) {
 
-        UserEvent original = new UserEvent(businessType, operationType, operationStatus);
+        AppEvent<UserInfo> original = new AppEvent<>(businessType, operationType, operationStatus);
         original.setNewData(newData);
 
         // 需求 9.1：序列化为 String
         String json = JsonUtil.serialize(original);
         // 需求 9.2：反序列化回 UserEvent
-        UserEvent restored = JsonUtil.deserialize(json, UserEvent.class);
+        AppEvent<UserInfo> restored = JsonUtil.deserialize(json, AppEvent.class);
 
         // 需求 9.5：四项相等
         assertThat(restored).isNotNull();

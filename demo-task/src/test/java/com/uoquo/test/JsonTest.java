@@ -1,12 +1,10 @@
 package com.uoquo.test;
 
-import com.uoquo.cloud.events.RemoteEvent;
+import com.uoquo.mybatis.page.PageResult;
 import com.uoquo.scheduler.platform.model.dto.UserInfoDto;
-import com.uoquo.scheduler.platform.model.pojo.AuthInfo;
 import com.uoquo.utils.json.JsonUtil;
 import com.uoquo.utils.json.TypeToken;
-import com.uoquo.web.common.ReturnData;
-import com.uoquo.web.mybatis.page.PageResult;
+import com.uoquo.web.ReturnData;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
@@ -20,16 +18,5 @@ public class JsonTest {
         Type respType = TypeToken.getParameterized(ReturnData.class, PageResult.class).getType();
         ReturnData<PageResult<UserInfoDto>> resp = JsonUtil.deserialize(json, respType);
         System.out.println(resp);
-    }
-
-    @Test
-    public void testJson2() {
-        // RemoteEvent 的父类有 JsonTypeInfo 的注解，因此字符串中必须有 type 属性
-        String json = "{\"type\":\"RemoteEvent\",\"timestamp\":\"1776667853210\",\"originService\":\"service-platform\",\"destinationService\":\"**\",\"id\":\"K7D9N00SM9TXV02Y\",\"retry\":false,\"destination\":null,\"token\":null,\"traceId\":\"K7D9MZHAGVVQYXX7\",\"businessType\":\"USER\",\"businessSubType\":null,\"businessTable\":null,\"businessId\":null,\"businessInstituteId\":null,\"operatorId\":\"34N82P6K7WPRMBRS\",\"operatorName\":null,\"operatorInstituteId\":null,\"operationType\":\"create\",\"operationStatus\":\"success\",\"operationTime\":\"1776667853211\",\"content\":null,\"extension\":{},\"appKey\":\"K4X3Z5W9H6Q0J7Q4\",\"appDeviceId\":null,\"appVersion\":null,\"appIp\":\"127.0.0.1\",\"remarks\":null,\"dataType\":\"com.uoquo.platform.user.model.pojo.UserInfo\",\"oldData\":null,\"newData\":{\"id\":null,\"instituteId\":null,\"deptId\":null,\"referralCode\":null,\"userCode\":null,\"userName\":\"newUserName\",\"realName\":null,\"pinYin\":null,\"phone\":null,\"password\":null,\"email\":null,\"avatar\":null,\"status\":null,\"statusTime\":null,\"statusMemo\":null,\"pwdExpired\":null,\"pwdLevel\":null,\"pwdEditTime\":null,\"loginErrorCount\":null,\"lastedLoginIp\":null,\"lastedLoginTime\":null,\"thirdId\":null,\"createUser\":null,\"createTime\":null,\"updateUser\":null,\"updateTime\":null,\"deleteState\":null}}";
-        RemoteEvent<Object> resp = JsonUtil.deserialize(json, RemoteEvent.class);
-        System.out.println(resp);
-
-        RemoteEvent<Object> resp2 = JsonUtil.deserialize(json, RemoteEvent.class, AuthInfo.class);
-        System.out.println(resp2);
     }
 }

@@ -9,12 +9,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import com.uoquo.web.events.AppEvent;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.uoquo.demo.event.AuthEvent;
 import com.uoquo.demo.model.pojo.AuthInfo;
 import com.uoquo.web.events.UoquoEventPublisher;
 
@@ -27,7 +27,7 @@ import net.jqwik.api.Provide;
 /**
  * Property 3：认证模拟事件携带所模拟账号。
  *
- * <p>For any account 字符串，登录成功模拟与登录失败模拟所发布的 {@link AuthEvent} 的
+ * <p>For any account 字符串，登录成功模拟与登录失败模拟所发布的 {@link AppEvent} 的
  * newData 都是一个 {@link AuthInfo}，其 account 字段等于输入的 account。</p>
  *
  * <p>Validates: Requirements 7.4, 8.3</p>
@@ -79,8 +79,8 @@ class EventDemoControllerAuthAccountPropertyTest {
         List<ApplicationEvent> published = captor.getAllValues();
         assertThat(published).hasSize(2);
         for (ApplicationEvent event : published) {
-            assertThat(event).isInstanceOf(AuthEvent.class);
-            AuthEvent authEvent = (AuthEvent) event;
+            assertThat(event).isInstanceOf(AppEvent.class);
+            AppEvent<AuthInfo> authEvent = (AppEvent<AuthInfo>) event;
             AuthInfo newData = authEvent.getNewData();
             assertThat(newData)
                     .as("AuthEvent.newData 应为携带账号的 AuthInfo")
