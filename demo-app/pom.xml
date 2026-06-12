@@ -2,102 +2,103 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.uoquo</groupId>
-        <artifactId>dependencies</artifactId>
-        <version>1.1.0</version>
-        <relativePath/>
-    </parent>
+  <parent>
+    <groupId>com.uoquo</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>1.1.0</version>
+    <relativePath/>
+  </parent>
 
-    <artifactId>demo-app</artifactId>
-    <version>1.0.0</version>
-    <description>单体应用</description>
+  <artifactId>demo-app</artifactId>
+  <version>1.0.0</version>
+  <description>单体应用</description>
 
-    <properties>
-        <!-- 覆盖父 pom 中 maven.test.skip=true，使本模块可编译并运行属性/单元测试 -->
-        <maven.test.skip>false</maven.test.skip>
-        <skipTests>false</skipTests>
-    </properties>
+  <properties>
+    <!-- 覆盖父 pom 中 maven.test.skip=true，使本模块可编译并运行属性/单元测试 -->
+    <maven.test.skip>false</maven.test.skip>
+    <skipTests>false</skipTests>
+  </properties>
 
-    <dependencies>
-        <!-- uoquo -->
-        <dependency>
-            <groupId>com.uoquo</groupId>
-            <artifactId>app-core</artifactId>
-            <version>${uoquo.version}</version>
-        </dependency>
-        <!-- spring -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-        <!-- db -->
-        <dependency>
-          <groupId>com.mysql</groupId>
-          <artifactId>mysql-connector-j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <!-- swagger 3 -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        </dependency>
+  <dependencies>
+    <!-- uoquo -->
+    <dependency>
+      <groupId>com.uoquo</groupId>
+      <artifactId>app-core</artifactId>
+      <version>${uoquo.version}</version>
+    </dependency>
+    <!-- spring -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+    </dependency>
+    <!-- db -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+    </dependency>
+    <!-- redis -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <!-- swagger 3 -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    </dependency>
 
-        <!-- 测试框架（支撑属性测试 Property 1-5） -->
-        <!-- Spring Boot 测试启动器：内含 JUnit 5 (Jupiter)、AssertJ 等；版本由父 BOM 管理 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- jqwik：基于 JUnit 5 平台的属性测试引擎；显式锁定 1.9.3（稳定版） -->
-        <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <version>1.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Mockito 核心：mock mapper / publisher；版本由父 BOM 管理 -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+    <!-- 测试框架（支撑属性测试 Property 1-5） -->
+    <!-- Spring Boot 测试启动器：内含 JUnit 5 (Jupiter)、AssertJ 等；版本由父 BOM 管理 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- jqwik：基于 JUnit 5 平台的属性测试引擎；显式锁定 1.9.3（稳定版） -->
+    <dependency>
+      <groupId>net.jqwik</groupId>
+      <artifactId>jqwik</artifactId>
+      <version>1.9.3</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Mockito 核心：mock mapper / publisher；版本由父 BOM 管理 -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-    </dependencies>
+  </dependencies>
 
-    <!-- 项目必须引入的plugin -->
-    <build>
-        <plugins>
-            <!-- 打包jar文件时，配置manifest文件，加入config和lib包的jar依赖 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <!-- springboot打包 -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+  <!-- 项目必须引入的plugin -->
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <!-- 打包jar文件时，配置manifest文件，加入config和lib包的jar依赖 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <!-- springboot打包 -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
