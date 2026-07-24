@@ -56,7 +56,8 @@ app:
 # ======================= web容器配置 =======================
 server:
   port: ${app.port}
-  use-forward-headers: true
+  # 由 Tomcat 原生处理 X-Forwarded-* 头（配合下方 server.tomcat.protocol-header）
+  forward-headers-strategy: native
   servlet:
     context-path: ${app.base-path:/}
     # spring boot 2.x
@@ -94,14 +95,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER # spring2.6.0之后默认为 PathPatternParser，要集成swagger3，则需要改回 AntPathMatcher
-    favicon:
-      enabled: false
-  http:
-    # spring boot 1.x
-    encoding:
-      enabled: true
-      force:   true
-      charset: UTF-8
   servlet:
     multipart:
       enabled: true
