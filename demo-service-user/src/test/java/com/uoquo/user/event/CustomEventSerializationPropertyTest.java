@@ -34,17 +34,27 @@ import org.junit.jupiter.api.Test;
 class CustomEventSerializationPropertyTest {
 
     /**
-     * 事件字符串字段（businessType/operationType/operationStatus）生成器：
-     * 覆盖空串、ASCII 字符串（1–50 字符）与中文字符串（1–20 字符）。
+     * 事件必填字符串字段（businessType/operationType）生成器：
+     * 覆盖 ASCII 字符串（1–50 字符）与中文字符串（1–20 字符）。
+     *
+     * <p>事件构造时会校验这两个字段非空，空串、空白、"null" 会被拒绝，因此生成器需排除这些值。</p>
      */
     @Provide
     Arbitrary<String> eventTexts() {
         return Arbitraries.oneOf(
-                Arbitraries.just(""),
-                Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(50),
-                Arbitraries.strings()
-                        .withCharRange('\u4e00', '\u9fa5')
-                        .ofMinLength(1).ofMaxLength(20));
+                        Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(50),
+                        Arbitraries.strings()
+                                .withCharRange('\u4e00', '\u9fa5')
+                                .ofMinLength(1).ofMaxLength(20))
+                .filter(s -> !s.isBlank() && !"null".equalsIgnoreCase(s.trim()));
+    }
+
+    /**
+     * 操作结果字段生成器：可选字段，允许空串。
+     */
+    @Provide
+    Arbitrary<String> resultTexts() {
+        return Arbitraries.oneOf(Arbitraries.just(""), eventTexts());
     }
 
     /**
@@ -58,7 +68,9 @@ class CustomEventSerializationPropertyTest {
                 Arbitraries.just("**"),
                 Arbitraries.just("demo-cloud-book"),
                 Arbitraries.just("demo-cloud-user"),
-                Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(30));
+                Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(30)
+                        // 空白、"null" 会被当作未指定目标服务
+                        .filter(s -> !s.isBlank() && !"null".equalsIgnoreCase(s.trim())));
     }
 
     /**
@@ -71,12 +83,13 @@ class CustomEventSerializationPropertyTest {
     void customEventSerializationRoundTrip(
             @ForAll("eventTexts") String businessType,
             @ForAll("eventTexts") String operationType,
-            @ForAll("eventTexts") String operationStatus,
+            @ForAll("resultTexts") String operationResult,
             @ForAll("destinationServices") String destinationService) {
 
+        // 第 4 个参数是 businessStatus，目标服务是第 5 个参数
         RemoteEvent<String> original = destinationService != null
-                ? new RemoteEvent<>(businessType, operationType, operationStatus, destinationService)
-                : new RemoteEvent<>(businessType, operationType, operationStatus);
+                ? new RemoteEvent<>(businessType, operationType, operationResult, null, destinationService)
+                : new RemoteEvent<>(businessType, operationType, operationResult);
 
         String json = JsonUtil.serialize(original);
         RemoteEvent<String> restored = JsonUtil.deserialize(json, RemoteEvent.class, String.class);
@@ -84,7 +97,7 @@ class CustomEventSerializationPropertyTest {
         assertThat(restored).isNotNull();
         assertThat(restored.getBusinessType()).isEqualTo(original.getBusinessType());
         assertThat(restored.getOperationType()).isEqualTo(original.getOperationType());
-        assertThat(restored.getOperationStatus()).isEqualTo(original.getOperationStatus());
+        assertThat(restored.getOperationResult()).isEqualTo(original.getOperationResult());
         assertThat(restored.getDestinationService()).isEqualTo(original.getDestinationService());
     }
 

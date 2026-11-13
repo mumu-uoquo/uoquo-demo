@@ -370,7 +370,7 @@ public class ScenarioController {
                     "masked=" + ScenarioRecorder.maskToken(rawToken)));
             Map<String, Object> info = new LinkedHashMap<>();
             info.put("logText", logText);
-            info.put("hint", "把 com.uoquo.web.events 的日志级别调到 DEBUG，可在控制台看到 'publish event:'、'received event:' 等日志，其中 token 均为脱敏后的值");
+            info.put("hint", "把 com.uoquo.web.events 的日志级别调到 DEBUG，可在控制台看到 'publish event:'（事件完整内容，每个事件只输出一次）、'skip event'、'process event begin'（一行摘要）等日志，其中 token 均为脱敏后的值；调到 TRACE 还可看到每个监听器的 'received event'");
             return new ReturnData<>(report("mask", runId, checks, obs, info));
         } finally {
             CurrentUser.clear();

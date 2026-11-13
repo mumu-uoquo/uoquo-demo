@@ -8,6 +8,9 @@ import com.uoquo.cloud.loadbalancer.IphashLoadBalancerConfiguration;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 @FeignClient(name = "demo-service-book", contextId = "BookRemoteService", path = "/api/book")
 @LoadBalancerClient(name = "demo-service-book", configuration = IphashLoadBalancerConfiguration.class)
@@ -18,4 +21,10 @@ public interface BookRemoteService {
      */
     @RequestMapping(value = "/book/name")
     String getBookName();
+
+    /**
+     * 事件场景测试：查询 book 服务的监听器在某次运行（runId）中观察到的记录。
+     */
+    @RequestMapping(value = "/demo/scn/result")
+    Map<String, Object> scnResult(@RequestParam("run") String run);
 }

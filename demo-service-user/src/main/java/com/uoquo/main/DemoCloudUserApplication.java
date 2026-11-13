@@ -8,6 +8,7 @@ import com.uoquo.main.config.DeveloperConfig;
 import com.uoquo.utils.StringUtil;
 import com.uoquo.utils.ThreadPoolUtil;
 import com.uoquo.web.ServiceApplication;
+import com.uoquo.web.StartupProfiler;
 
 import com.uoquo.web.BaseCacheKey;
 import com.uoquo.utils.spring.RedisUtil;
@@ -35,9 +36,10 @@ public class DemoCloudUserApplication extends ServiceApplication {
      * 主程序入口.
      */
     public static void main(String[] args) {
-        init();
         // 启动应用
         SpringApplication application = new SpringApplication(DemoCloudUserApplication.class);
+        // 启动耗时分析（默认关闭；-Dapp.startup.profile=true 或环境变量 APP_STARTUP_PROFILE=true 开启）
+        StartupProfiler.enable(application);
         // 常用监听器（预留，暂无实际用途）
         application.addListeners((ApplicationListener<ApplicationStartingEvent>) event -> {
             System.out.println("application starting event"); // 系统启动时，此时logback还没有初始化，因此不能使用log
@@ -75,8 +77,8 @@ public class DemoCloudUserApplication extends ServiceApplication {
         RedisUtil.put("a", "a", 10);
         log.info("get redis value : {}", Optional.ofNullable(RedisUtil.get("a")));
 
-        ThreadPoolUtil.execute(()->{
-            log.info("auto print.");
-        }, "10/10 * * * * ?");
+//        ThreadPoolUtil.execute(()->{
+//            log.info("auto print.");
+//        }, "10/10 * * * * ?");
     }
 }

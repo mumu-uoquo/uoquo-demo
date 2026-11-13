@@ -60,13 +60,14 @@ public class EventDemoController {
     @Operation(summary = "定向发布事件到 demo-cloud-book", operationId = "eventDirected")
     public ReturnData<String> directed() {
         try {
-            RemoteEvent<UserInfo> event = new RemoteEvent<>("USER", "UPDATE", "SUCCESS", "demo-cloud-book");
+            // 构造函数的第 5 个参数才是目标服务名（第 4 个是业务状态）；目标服务名是 demo-service-book
+            RemoteEvent<UserInfo> event = new RemoteEvent<>("USER", "UPDATE", "SUCCESS", null, "demo-service-book");
             UserInfo userInfo = new UserInfo();
             userInfo.setId("userId");
             userInfo.setUserName("定向信息");
             event.setNewData(userInfo);
             eventPublisher.publishEvent(event);
-            return new ReturnData<>("定向事件已发布，目标服务: demo-cloud-book, bizType: USER, opType: UPDATE");
+            return new ReturnData<>("定向事件已发布，目标服务: demo-service-book, bizType: USER, opType: UPDATE");
         } catch (Exception e) {
             log.error("定向事件发布失败", e);
             return new ReturnData<>(new SystemErrorException("事件发布失败: " + e.getMessage()));
