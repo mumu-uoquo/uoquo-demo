@@ -45,17 +45,26 @@ import net.jqwik.api.Provide;
 class UserEventSerializationPropertyTest {
 
     /**
-     * 事件字符串字段（businessType/operationType/operationStatus）生成器：
-     * 覆盖空串、ASCII 与非 ASCII（中文）字符。
+     * 事件必填字符串字段（businessType/operationType）生成器：覆盖 ASCII 与非 ASCII（中文）字符。
+     *
+     * <p>事件构造时会校验这两个字段非空，空串、空白、"null" 会被拒绝，因此生成器需排除这些值。</p>
      */
     @Provide
     Arbitrary<String> eventTexts() {
         return Arbitraries.oneOf(
-                Arbitraries.just(""),
-                Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(20),
-                Arbitraries.strings()
-                        .withCharRange('\u4e00', '\u9fa5')
-                        .ofMinLength(1).ofMaxLength(10));
+                        Arbitraries.strings().ascii().ofMinLength(1).ofMaxLength(20),
+                        Arbitraries.strings()
+                                .withCharRange('\u4e00', '\u9fa5')
+                                .ofMinLength(1).ofMaxLength(10))
+                .filter(s -> !s.isBlank() && !"null".equalsIgnoreCase(s.trim()));
+    }
+
+    /**
+     * 操作结果字段生成器：可选字段，允许空串。
+     */
+    @Provide
+    Arbitrary<String> resultTexts() {
+        return Arbitraries.oneOf(Arbitraries.just(""), eventTexts());
     }
 
     /**
@@ -122,10 +131,10 @@ class UserEventSerializationPropertyTest {
     void userEventSerializationRoundTrip(
             @ForAll("eventTexts") String businessType,
             @ForAll("eventTexts") String operationType,
-            @ForAll("eventTexts") String operationStatus,
+            @ForAll("resultTexts") String operationResult,
             @ForAll("userInfos") UserInfo newData) {
 
-        AppEvent<UserInfo> original = new AppEvent<>(businessType, operationType, operationStatus);
+        AppEvent<UserInfo> original = new AppEvent<>(businessType, operationType, operationResult);
         original.setNewData(newData);
 
         // 需求 9.1：序列化为 String
@@ -137,7 +146,7 @@ class UserEventSerializationPropertyTest {
         assertThat(restored).isNotNull();
         assertThat(restored.getBusinessType()).isEqualTo(original.getBusinessType());
         assertThat(restored.getOperationType()).isEqualTo(original.getOperationType());
-        assertThat(restored.getOperationStatus()).isEqualTo(original.getOperationStatus());
+        assertThat(restored.getOperationResult()).isEqualTo(original.getOperationResult());
         assertUserInfoEquals(restored.getNewData(), original.getNewData());
     }
 

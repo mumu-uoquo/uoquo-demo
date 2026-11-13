@@ -34,6 +34,17 @@ app:
       max-size  : ${THREAD_POOL_SIZE:16}  # 最大线程数，默认50
       keep-alive: ${THREAD_KEEP_ALIVE:60} # 线程活跃时间（秒）
       queue-capacity : ${THREAD_TASK_QUEUE:1024} # 任务队列（核心线程数 / 单任务时间秒 * 任务最大时间秒）
+  # ============= 事件机制 =============
+  # 事件专用线程池（事件的投递与监听器的执行共用）。生产环境一般用默认值（4/16/1000/60），
+  # 这里特意调小，便于用 /demo/scn/pool/saturate 复现“线程池饱和”的场景。
+  event:
+    pool:
+      core-size : ${EVENT_POOL_CORE:2}        # 核心线程数（默认 4）
+      max-size  : ${EVENT_POOL_MAX:4}         # 最大线程数（默认 16）
+      queue-capacity : ${EVENT_POOL_QUEUE:10} # 等待队列长度（默认 1000）
+      keep-alive-seconds : ${EVENT_POOL_KEEP_ALIVE:60}
+    scanner:
+      warm-up : ${EVENT_SCAN_WARMUP:true}     # 启动完成后预热事件类扫描索引（默认 true）
   # ============= 自定义连接池 =============
   http:
     pool:

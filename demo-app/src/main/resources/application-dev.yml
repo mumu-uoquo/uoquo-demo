@@ -54,4 +54,5 @@ logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
     com.uoquo: ${LOG_LEVEL_APP:DEBUG}
-    com.uoquo.web.interceptor.GlobalInterceptor: ${LOG_LEVEL_ROOT:INFO}
+    com.uoquo.web.interceptor.GlobalInterceptor: ${LOG_LEVEL_ACCESS:INFO}
+    ACCESS_RESPONSE_ALL: DEBUG
